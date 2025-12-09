@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authenticated - Descope Sample App</title>
+    <!-- 
+        This template replaces AuthenticatedPage.aspx from the .NET application.
+        Migrated from: DescopeSampleApp/AuthenticatedPage.aspx
+        
+        This page demonstrates:
+        - Client-side session token management
+        - Making authenticated API calls with Bearer token
+        - Redirect to login if not authenticated
+    -->
+    <script src="https://unpkg.com/@descope/web-js-sdk@1.10.45/dist/index.umd.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">Descope Sample App</a>
+            <div class="navbar-nav">
+                <a class="nav-link" th:href="@{/}">Home</a>
+                <a class="nav-link" th:href="@{/swagger-ui.html}">API Docs</a>
+                <button class="btn btn-outline-light btn-sm ms-2" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h4>Welcome to the Authenticated Page!</h4>
+            </div>
+            <div class="card-body">
+                <p>You are successfully authenticated with Descope.</p>
+                <button class="btn btn-primary" onclick="testSampleAPI(event)">
+                    Click here to test Sample API
+                </button>
+            </div>
+        </div>
+
+        <div id="apiResponse" class="mt-4"></div>
+    </div>
+
+    <script>
+        // Initialize Descope SDK
+        // TODO: Replace YOUR_DESCOPE_PROJECT_ID with actual project ID
+        const sdk = Descope({ 
+            projectId: "YOUR_DESCOPE_PROJECT_ID", 
+            persistTokens: true, 
+            autoRefresh: true 
+        });
+
+        // Check authentication status
+        const sessionToken = sdk.getSessionToken();
+        const currentPath = window.location.pathname;
+        
+        if ((sessionToken) && (!sdk.isJwtExpired(sessionToken))) {
+            // User is logged in - stay on page
+            console.log('User is authenticated');
+        } else {
+            // Redirect to login page if not authenticated
+            if (currentPath !== '/login') {
+                window.location.replace('/login');
+            }
+        }
+
+        // Test the Sample API endpoint
+        async function testSampleAPI(event) {
+            event.preventDefault();
+            const sessionToken = sdk.getSessionToken();
+            
+            if (sessionToken && !sdk.isJwtExpired(sessionToken)) {
+                try {
+                    // Make authenticated API call with Bearer token
+                    const response = await fetch("/api/sample", {
+                        headers: {
+                            "Authorization": `Bearer ${sessionToken}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Request failed with status ${response.status}`);
+                    }
+
+                    const responseData = await response.json();
+                    console.log(responseData);
+                    
+                    document.getElementById("apiResponse").innerHTML = `
+                        <div class="alert alert-success">
+                            <h5>API Response</h5>
+                            <p>Status Code: ${response.status}</p>
+                            <pre>${JSON.stringify(responseData, null, 2)}</pre>
+                        </div>
+                    `;
+                } catch (error) {
+                    console.error("Request failed:", error.message);
+                    document.getElementById("apiResponse").innerHTML = `
+                        <div class="alert alert-danger">
+                            <h5>Error</h5>
+                            <p>${error.message}</p>
+                        </div>
+                    `;
+                }
+            } else {
+                window.location.replace('/login');
+            }
+        }
+
+        // Logout function
+        function logout() {
+            sdk.logout();
+            window.location.replace('/login');
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

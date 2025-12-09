@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Descope Sample App</title>
+    <!-- 
+        This template replaces Login.aspx from the .NET application.
+        Migrated from: DescopeSampleApp/Login.aspx
+        
+        The Descope Web Component is used for authentication flow.
+        Replace YOUR_DESCOPE_PROJECT_ID with your actual Descope Project ID.
+    -->
+    <script src="https://unpkg.com/@descope/web-js-sdk@1.10.45/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/@descope/web-component@3.11.14/dist/index.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">Descope Sample App</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h2 class="text-center mb-4">Login</h2>
+                <!-- Descope Web Component for authentication -->
+                <!-- TODO: Replace YOUR_DESCOPE_PROJECT_ID with actual project ID -->
+                <descope-wc project-id="YOUR_DESCOPE_PROJECT_ID" flow-id="sign-up-or-in"></descope-wc>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const wcElement = document.getElementsByTagName('descope-wc')[0];
+        
+        const onSuccess = () => {
+            // Redirect to authenticated page on successful login
+            window.location.replace('/authenticated');
+        };
+        
+        const onError = (err) => {
+            console.error('Login error:', err);
+        };
+
+        wcElement.addEventListener('success', onSuccess);
+        wcElement.addEventListener('error', onError);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
