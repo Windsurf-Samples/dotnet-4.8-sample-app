@@ -1,0 +1,37 @@
+/*
+ * Site-wide custom styles for Descope Sample App
+ * This replaces Content/site.css from the .NET application.
+ * 
+ * Migrated from: DescopeSampleApp/Content/site.css
+ */
+
+body {
+    padding-top: 0;
+    padding-bottom: 20px;
+}
+
+.jumbotron {
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+    background-color: #e9ecef;
+    border-radius: 0.3rem;
+}
+
+.jumbotron h1 {
+    font-weight: 300;
+}
+
+/* API Response styling */
+#apiResponse pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+}
+
+/* Descope Web Component container */
+descope-wc {
+    display: block;
+    max-width: 400px;
+    margin: 0 auto;
+}
